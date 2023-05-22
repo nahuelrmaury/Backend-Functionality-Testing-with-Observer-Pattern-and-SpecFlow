@@ -2,43 +2,36 @@
 {
     public class StringGenerator
     {
+        private readonly Random random = new Random();
+        private const string Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        private const string NumericChars = "0123456789";
+        private const string SpecialChars = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+
         public string AlphabetString(int length)
         {
-            const string alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            Random random = new Random();
-            char[] randomChars = new char[length];
-            for (int i = 0; i < length; i++)
-                randomChars[i] = alphabet[random.Next(alphabet.Length)];
+            char[] randomChars = Enumerable.Range(0, length)
+                .Select(_ => Alphabet[random.Next(Alphabet.Length)])
+                .ToArray();
 
-            string randomString = new string(randomChars);
-
-            return randomString;
+            return new string(randomChars);
         }
 
         public string NumericString(int length)
         {
-            Random random = new Random();
-            const string chars = "0123456789";
-            char[] randomChars = new char[length];
-            for (int i = 0; i < length; i++)
-                randomChars[i] = chars[random.Next(chars.Length)];
+            char[] randomChars = Enumerable.Range(0, length)
+                .Select(_ => NumericChars[random.Next(NumericChars.Length)])
+                .ToArray();
 
-            string randomString = new string(randomChars);
-
-            return randomString;
+            return new string(randomChars);
         }
 
         public string SpecialCharsString(int length)
         {
-            const string chars = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
-            Random random = new Random();
-            char[] randomChars = new char[length];
-            for (int i = 0; i < length; i++)
-                randomChars[i] = chars[random.Next(chars.Length)];
+            char[] randomChars = Enumerable.Range(0, length)
+                .Select(_ => SpecialChars[random.Next(SpecialChars.Length)])
+                .ToArray();
 
-            string randomString = new string(randomChars);
-
-            return randomString;
+            return new string(randomChars);
         }
     }
 }
