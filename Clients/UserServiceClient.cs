@@ -28,13 +28,13 @@ namespace BackendTests.Clients
 
         public async Task<CommonResponse<object>> ReadUser(int id)
         {
-            var getProductInfoRequest = new HttpRequestMessage
+            var getUserInfoRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
                 RequestUri = new Uri($"{_baseUrl}/UserManagement/GetUserStatus?userId={id}")
             };
 
-            HttpResponseMessage response = await _httpClient.SendAsync(getProductInfoRequest);
+            HttpResponseMessage response = await _httpClient.SendAsync(getUserInfoRequest);
 
             return await response.ToCommonResponse<object>();
 
@@ -42,26 +42,26 @@ namespace BackendTests.Clients
 
         public async Task<CommonResponse<object>> UpdateUser(int id, bool status)
         {
-            var getProductInfoRequest = new HttpRequestMessage
+            var getUserInfoRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Put,
                 RequestUri = new Uri($"{_baseUrl}/UserManagement/SetUserStatus?userId={id}&newStatus={status}")
             };
 
-            HttpResponseMessage response = await _httpClient.SendAsync(getProductInfoRequest);
+            HttpResponseMessage response = await _httpClient.SendAsync(getUserInfoRequest);
 
             return await response.ToCommonResponse<object>();
         }
 
         public async Task<CommonResponse<object>> DeleteUser(int id)
         {
-            var getProductInfoRequest = new HttpRequestMessage
+            var getUserInfoRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Delete,
                 RequestUri = new Uri($"{_baseUrl}/Register/DeleteUser?userId={id}")
             };
 
-            HttpResponseMessage response = await _httpClient.SendAsync(getProductInfoRequest);
+            HttpResponseMessage response = await _httpClient.SendAsync(getUserInfoRequest);
 
             return await response.ToCommonResponse<object>();
         }
