@@ -118,29 +118,7 @@ namespace BackendTests
         }
 
         [Test]
-        public async Task T06_GetBalance_GetBalanceRequestAfterRevert_StatusCodeIsOk()
-        {
-            /* precondition */
-            var firstName = _stringGenerator.AlphabetString(10);
-            var lastName = _stringGenerator.AlphabetString(10);
-            var request = _userGenerator.GenerateUser(firstName, lastName);
-            var responseCreatedUser = await _userServiceClient.CreateUser(request);
-            var userId = int.Parse(responseCreatedUser.Content);
-            var requestStatus = await _userServiceClient.UpdateUser(userId, true);
-            var requestCharge = _chargeGenerator.ChargeWallet(userId, 100000);
-            var responseChargedWallet = await _walletServiceClient.ChargeWallet(requestCharge);
-            var transactionId = responseChargedWallet.Content.Substring(1, responseChargedWallet.Content.Length - 2);
-
-            /* action */
-            var responseRevertTransaction = await _walletServiceClient.RevertTransaction(transactionId);
-            var responseGetBalance = await _walletServiceClient.GetBalance(userId);
-
-            /* assert */
-            Assert.That(responseGetBalance.Status, Is.EqualTo(HttpStatusCode.OK));
-        }
-
-        [Test]
-        public async Task T07_ChargeWallet_ToNotActiveUser_StatusCodeIsInternalServerError()
+        public async Task T06_ChargeWallet_ToNotActiveUser_StatusCodeIsInternalServerError()
         {
             /* precondition */
             var firstName = _stringGenerator.AlphabetString(10);
@@ -158,7 +136,7 @@ namespace BackendTests
         }
 
         [Test]
-        public async Task T08_ChargeWalletWithBalanceN_ChargeN_StatusCodeIsInternalServerError()
+        public async Task T07_ChargeWallet_WithBalanceNAndChargeMinusNMinusDotZeroOne_StatusCodeIsInternalServerError()
         {
             /* precondition */
             var firstName = _stringGenerator.AlphabetString(10);
@@ -166,15 +144,105 @@ namespace BackendTests
             var request = _userGenerator.GenerateUser(firstName, lastName);
             var responseCreatedUser = await _userServiceClient.CreateUser(request);
             var userId = int.Parse(responseCreatedUser.Content);
+            var responseGetStatus = await _userServiceClient.UpdateUser(userId, true);
             var requestCharge = _chargeGenerator.ChargeWallet(userId, 100000);
+            var responseCharge = await _walletServiceClient.ChargeWallet(requestCharge);
 
             /* action */
-            var responseGetBalance = await _walletServiceClient.ChargeWallet(requestCharge);
+            var requestNCharge = _chargeGenerator.ChargeWallet(userId, -100000 - 0.01);
+            var responseNCharge = await _walletServiceClient.ChargeWallet(requestNCharge);
 
             /* assert */
-            Assert.That(responseGetBalance.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
+            Assert.That(responseNCharge.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
         }
 
+        [Test]
+        public async Task T08_ChargeWallet_WithBalanceNAndChargeMinusN_StatusCodeIsOk()
+        {
+            /* precondition */
+            var firstName = _stringGenerator.AlphabetString(10);
+            var lastName = _stringGenerator.AlphabetString(10);
+            var request = _userGenerator.GenerateUser(firstName, lastName);
+            var responseCreatedUser = await _userServiceClient.CreateUser(request);
+            var userId = int.Parse(responseCreatedUser.Content);
+            var responseGetStatus = await _userServiceClient.UpdateUser(userId, true);
+            var requestCharge = _chargeGenerator.ChargeWallet(userId, 100000);
+            var responseCharge = await _walletServiceClient.ChargeWallet(requestCharge);
 
+            /* action */
+            var requestNCharge = _chargeGenerator.ChargeWallet(userId, -100000);
+            var responseNCharge = await _walletServiceClient.ChargeWallet(requestNCharge);
+
+            /* assert */
+            Assert.That(responseNCharge.Status, Is.EqualTo(HttpStatusCode.OK));
+        }
+
+        [Test]
+        public async Task T09_ChargeWallet_WithBalanceMinusNAndChargeN_StatusCodeIsOk()
+        {
+            /* precondition */
+            var firstName = _stringGenerator.AlphabetString(10);
+            var lastName = _stringGenerator.AlphabetString(10);
+            var request = _userGenerator.GenerateUser(firstName, lastName);
+            var responseCreatedUser = await _userServiceClient.CreateUser(request);
+            var userId = int.Parse(responseCreatedUser.Content);
+            var responseGetStatus = await _userServiceClient.UpdateUser(userId, true);
+            var requestCharge = _chargeGenerator.ChargeWallet(userId, -100000);
+            var responseCharge = await _walletServiceClient.ChargeWallet(requestCharge);
+
+            /* action */
+            var requestNCharge = _chargeGenerator.ChargeWallet(userId, 100000);
+            var responseNCharge = await _walletServiceClient.ChargeWallet(requestNCharge);
+
+            /* assert */
+            Assert.That(responseNCharge.Status, Is.EqualTo(HttpStatusCode.OK));
+        }
+
+        [Test]
+        public async Task T10_ChargeWallet_WithBalanceZeroAndChargeMinusThirty_StatusCodeIsInternalServerError()
+        {
+            /* precondition */
+            var firstName = _stringGenerator.AlphabetString(10);
+            var lastName = _stringGenerator.AlphabetString(10);
+            var request = _userGenerator.GenerateUser(firstName, lastName);
+            var responseCreatedUser = await _userServiceClient.CreateUser(request);
+            var userId = int.Parse(responseCreatedUser.Content);
+            var responseGetStatus = await _userServiceClient.UpdateUser(userId, true);
+            var requestCharge = _chargeGenerator.ChargeWallet(userId, 0);
+            var responseCharge = await _walletServiceClient.ChargeWallet(requestCharge);
+
+            /* action */
+            var requestNCharge = _chargeGenerator.ChargeWallet(userId, -30);
+            var responseNCharge = await _walletServiceClient.ChargeWallet(requestNCharge);
+
+            /* assert */
+            Assert.That(responseNCharge.Status, Is.EqualTo(HttpStatusCode.InternalServerError));
+        }
+
+        [Test]
+        public async Task T11_ChargeWallet_WithBalanceNPlusTenAndChargeN_StatusCodeIsOk()
+        {
+            /* precondition */
+            var firstName = _stringGenerator.AlphabetString(10);
+            var lastName = _stringGenerator.AlphabetString(10);
+            var request = _userGenerator.GenerateUser(firstName, lastName);
+            var responseCreatedUser = await _userServiceClient.CreateUser(request);
+            var userId = int.Parse(responseCreatedUser.Content);
+            var responseGetStatus = await _userServiceClient.UpdateUser(userId, true);
+            var requestCharge = _chargeGenerator.ChargeWallet(userId, 100000 + 10);
+            var responseCharge = await _walletServiceClient.ChargeWallet(requestCharge);
+
+            /* action */
+            var requestNCharge = _chargeGenerator.ChargeWallet(userId, 100000);
+            var responseNCharge = await _walletServiceClient.ChargeWallet(requestNCharge);
+            var requestBalance = await _walletServiceClient.GetBalance(userId);
+
+            /* assert */
+            Assert.Multiple(() =>
+            {
+                Assert.That(responseNCharge.Status, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(requestBalance.Body, Is.EqualTo(200010));
+            });
+        }
     }
 }
