@@ -5,9 +5,9 @@ namespace BackendTests.Models.Requests
     public class CreateUserRequest
     {
         [JsonProperty("firstName")]
-        public string FirstName;
+        public string? FirstName;
 
         [JsonProperty("lastName")]
-        public string LastName;
+        public string? LastName;
     }
 }

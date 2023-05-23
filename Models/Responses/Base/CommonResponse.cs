@@ -6,8 +6,8 @@ namespace BackendTests.Models.Responses.Base
     {
         public HttpStatusCode Status;
 
-        public string Content;
+        public string? Content;
 
-        public T Body;
+        public T? Body;
     }
 }
