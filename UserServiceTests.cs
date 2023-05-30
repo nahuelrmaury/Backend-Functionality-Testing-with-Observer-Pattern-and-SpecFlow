@@ -127,6 +127,7 @@ namespace BackendTests
             Assert.That(secondUserId - firstUserId, Is.EqualTo(1));
         }
 
+        [Test]
         public async Task T08_CreateTwoUsers_DeleteLastUserCreatedAndCreateNewUser_ReturningValueIsAutoIncremented()
         {
             /* precondition */

@@ -53,17 +53,21 @@ namespace BackendTests.Clients
             return await response.ToCommonResponse<object>();
         }
 
+
+        /* deleted user with http post method */
         public async Task<CommonResponse<object>> DeleteUser(int id)
         {
-            var getUserInfoRequest = new HttpRequestMessage
+            var deleteUserRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Delete,
-                RequestUri = new Uri($"{_baseUrl}/Register/DeleteUser?userId={id}")
+                Method = HttpMethod.Post,
+                RequestUri = new Uri($"{_baseUrl}/Register/DeleteUser"),
+                Content = new StringContent($"{{ \"userId\": {id} }}", Encoding.UTF8, "application/json")
             };
 
-            HttpResponseMessage response = await _httpClient.SendAsync(getUserInfoRequest);
+            HttpResponseMessage response = await _httpClient.SendAsync(deleteUserRequest);
 
             return await response.ToCommonResponse<object>();
         }
+
     }
 }
