@@ -61,13 +61,14 @@ namespace BackendTests.Clients
             {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri($"{_baseUrl}/Register/DeleteUser"),
-                Content = new StringContent($"{{ \"userId\": {id} }}", Encoding.UTF8, "application/json")
+                Content = new StringContent(JsonConvert.SerializeObject(new { userId = id }), Encoding.UTF8, "application/json")
             };
 
             HttpResponseMessage response = await _httpClient.SendAsync(deleteUserRequest);
 
             return await response.ToCommonResponse<object>();
         }
+
 
     }
 }

@@ -385,8 +385,8 @@ namespace BackendTests
             /* assert */
             Assert.Multiple(() =>
             {
-                Assert.AreEqual("false", responseRead.Content);
-                Assert.AreEqual(HttpStatusCode.OK, responseDelete.Status);
+                Assert.That(responseRead.Content, Is.EqualTo("false"));
+                Assert.That(responseDelete.Status, Is.EqualTo(HttpStatusCode.OK));
             });
         }
 
