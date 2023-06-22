@@ -1,19 +1,19 @@
 ﻿using Newtonsoft.Json;
 using System.Text;
-using BackendTests.Models.Responses.Base;
 using BackendTests.Models.Requests;
+using BackendTests.Models.Responses.Base;
 using BackendTests.Extensions;
 
 namespace BackendTests.Clients
 {
-    public class UserServiceClient
+    public class UserServiceClient : IObservable<CommonResponse<object>>
     {
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly string _baseUrl = "https://userservice-uat.azurewebsites.net";
+        private readonly UserObservable userObservable = new UserObservable();
 
         public async Task<CommonResponse<object>> CreateUser(CreateUserRequest request)
         {
-
             var httpRequestMessage = new HttpRequestMessage()
             {
                 Method = HttpMethod.Post,
@@ -23,7 +23,11 @@ namespace BackendTests.Clients
 
             HttpResponseMessage response = await _httpClient.SendAsync(httpRequestMessage);
 
-            return await response.ToCommonResponse<object>();
+            var commonResponse = await response.ToCommonResponse<object>();
+
+            userObservable.NotifyObservers(commonResponse);
+
+            return commonResponse;
         }
 
         public async Task<CommonResponse<object>> ReadUser(int id)
@@ -37,7 +41,6 @@ namespace BackendTests.Clients
             HttpResponseMessage response = await _httpClient.SendAsync(getUserInfoRequest);
 
             return await response.ToCommonResponse<object>();
-
         }
 
         public async Task<CommonResponse<object>> UpdateUser(int id, bool status)
@@ -53,22 +56,26 @@ namespace BackendTests.Clients
             return await response.ToCommonResponse<object>();
         }
 
-
-        /* deleted user with http post method */
         public async Task<CommonResponse<object>> DeleteUser(int id)
         {
             var deleteUserRequest = new HttpRequestMessage
             {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri($"{_baseUrl}/Register/DeleteUser"),
-                Content = new StringContent(JsonConvert.SerializeObject(new { userId = id }), Encoding.UTF8, "application/json")
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri($"{_baseUrl}/Register/DeleteUser?userId={id}")
             };
 
             HttpResponseMessage response = await _httpClient.SendAsync(deleteUserRequest);
 
-            return await response.ToCommonResponse<object>();
+            var commonResponse = await response.ToCommonResponse<object>();
+
+            userObservable.NotifyObservers(commonResponse);
+
+            return commonResponse;
         }
 
-
+        public IDisposable Subscribe(IObserver<CommonResponse<object>> observer)
+        {
+            return userObservable.Subscribe(observer);
+        }
     }
 }
