@@ -9,6 +9,11 @@ namespace BackendTests.Steps
     {
         private readonly DataContext _context;
 
+        public WalletAssertSteps(DataContext context)
+        {
+            _context = context;
+        }
+
         [Then(@"Status code is '([^']*)'")]
         public void ThenStatusCodeIs(HttpStatusCode expected)
         {

@@ -21,6 +21,10 @@ namespace BackendTests
 
         public CommonResponse<object> ChargeResponse;
 
+        public CommonResponse<object> ChargeWalletResponse;
+
+        public string TransactionId;
+
         public int FirstUserId;
 
         public int SecondUserId;
@@ -28,7 +32,5 @@ namespace BackendTests
         public int ThirdUserId;
 
         public int Result;
-
-        //public CommonResponse<List<GetTransactionInfoResponse>> GetAllUserTransactions;
     }
 }
